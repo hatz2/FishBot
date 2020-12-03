@@ -92,7 +92,7 @@ Func HandleFish($PacketSplitted)
     $opcode = $PacketSplitted[0]
     
     if $opcode = "guri" Then
-        if $PacketSplitted[1] = 6 And $PacketSplitted[2] = 1 And $PacketSplitted[3] = $userID And $PacketSplitted[4] = 30 Then
+        if $PacketSplitted[1] = 6 And $PacketSplitted[2] = 1 And $PacketSplitted[3] = $userID And ($PacketSplitted[4] = 30 Or $PacketSplitted[4] = 31) Then
             PacketLogger_SendPacket($Socket, "u_s 2 1 " & $userID)
         EndIf
 
