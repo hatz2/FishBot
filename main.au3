@@ -55,8 +55,8 @@ Func Bot()
     Global $Socket = 0
     Global $userID = 0
     Global $foundPort = False
-    Global $fishing = True
     Global $foundID = False
+    Global $fishing = True
 
     ;Wait to get the port
     While Not $foundPort
