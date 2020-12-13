@@ -61,6 +61,7 @@ Func Bot()
     Global $baitSkillIsOn = True
     Global $expSkillIsOn = True
     Global $fishLineSkillIsOn = True
+    Global $proBaitSkillIsOn = True
     Global $bait = True
 
     ;Wait to get the port
@@ -90,6 +91,8 @@ Func IncomingPacket($Type, $PacketSplitted, $FullPacket)
 
     If $opcode = "sayi" Then
         HandleSayi($PacketSplitted)
+    ElseIf $opcode = "say" Then
+        HandleSay($PacketSplitted)
     ElseIf $opcode = "sr" Then
         HandleSkillCD($PacketSplitted)
     ElseIf $opcode = "lev" Then
@@ -112,10 +115,8 @@ Func HandleFish($PacketSplitted)
     ;If character finished doing fishing animation
     if $PacketSplitted[1] = 6 And $PacketSplitted[2] = 1 And $PacketSplitted[3] = $userID And $PacketSplitted[4] = 0 And $bait Then
         Sleep(1000)
-
         CheckSkills()
-
-        PacketLogger_SendPacket($Socket, "u_s 1 1 " & $userID)
+        Fish()
     EndIf
 EndFunc
 
@@ -131,11 +132,11 @@ Func HandleLevel($PacketSplitted)
         $baitSkillIsOn = True
         $expSkillIsOn = True
         $fishLineSkillIsOn = True
+        $proBaitSkillIsOn = True
 
         If Not $bait and $spLevel >= 3 Then
             CheckSkills()
-
-            PacketLogger_SendPacket($Socket, "u_s 1 1 " & $userID)
+            Fish()
         EndIf
     EndIf
 
@@ -152,15 +153,17 @@ Func HandleSkillCD($PacketSplitted)
         $fishLineSkillIsOn = True
     EndIf
 
+    If $PacketSplitted[1] = 10 Then
+        $proBaitSkillIsOn = True
+    EndIf
+
     if $PacketSplitted[1] = 3 Then
         $baitSkillIsOn = True
 
         ;If there's no more bait use skill if is not on CD
         If Not $bait And $spLevel >= 3 Then 
-
             CheckSkills()
-
-            PacketLogger_SendPacket($Socket, "u_s 1 1 " & $userID)
+            Fish()
         EndIf
     EndIf
 
@@ -175,11 +178,21 @@ Func HandleSayi($PacketSplitted)
 
         If $baitSkillIsOn Then
             CheckSkills()
-            PacketLogger_SendPacket($Socket, "u_s 1 1 " & $userID)
+            Fish()
         EndIf
     EndIf
 EndFunc
 
+;~ Function that handles say packete
+Func HandleSay($PacketSplitted)
+    If $PacketSplitted[1] = 1 And $PacketSplitted[2] = $userID And $PacketSplitted[3] = 10 And $PacketSplitted[4] = "fish" And $PacketSplitted[5] = "data" Then
+        Sleep(1000)
+        CheckSkills()
+        Fish()
+    EndIf
+EndFunc
+
+;~ Function that check if skills are up
 Func CheckSkills()
     ;Check if fish line skill is up
     if $spLevel >= 25 And $fishLineSkillIsOn Then
@@ -200,5 +213,16 @@ Func CheckSkills()
         $baitSkillIsOn = False
         PacketLogger_SendPacket($Socket, "u_s 3 1 " & $userID)
         Sleep(2000)
+    EndIf
+EndFunc
+
+;~ Function to start fishing
+Func Fish()
+    ;Check if pro bait skill is up
+    If $spLevel >= 45 And $proBaitSkillIsOn Then
+        $proBaitSkillIsOn = False
+        PacketLogger_SendPacket($Socket, "u_s 10 1 " & $userID)
+    Else
+        PacketLogger_SendPacket($Socket, "u_s 1 1 " & $userID)
     EndIf
 EndFunc
