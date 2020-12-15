@@ -201,7 +201,7 @@ Func HandleIn($PacketSplitted)
     ;If user has GM Authority
     If $PacketSplitted[8] = 2 Then
         For $i = 0 to 5
-            PacketLogger_SendPacket("pulse 0 0")
+            PacketLogger_SendPacket($Socket, "pulse 0 0")
             Sleep(1)
         Next
     EndIf
@@ -215,7 +215,7 @@ Func HandleSpk($PacketSplitted)
 			Beep(800, 200)
 			Sleep(50)
         Next
-    Next
+    EndIf
 EndFunc
 
 ;~ Function that check if skills are up
