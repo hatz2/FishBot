@@ -52,7 +52,7 @@ Func Bot()
     Opt("TrayIconHide", 1)
     PacketLogger_Startup()
 
-    Global $spLevel = 3
+    Global $spLevel = 1
     Global $Socket = 0
     Global $userID = 0
     Global $foundPort = False
@@ -91,6 +91,10 @@ Func IncomingPacket($Type, $PacketSplitted, $FullPacket)
 
     If $opcode = "sayi" Then
         HandleSayi($PacketSplitted)
+    ElseIf $opcode = "spk" Then
+        HandleSpk($PacketSplitted)
+    ElseIf $opcode = "in" Then
+        HandleIn($PacketSplitted)
     ElseIf $opcode = "say" Then
         HandleSay($PacketSplitted)
     ElseIf $opcode = "sr" Then
@@ -183,13 +187,35 @@ Func HandleSayi($PacketSplitted)
     EndIf
 EndFunc
 
-;~ Function that handles say packete
+;~ Function that handles say packets
 Func HandleSay($PacketSplitted)
     If $PacketSplitted[1] = 1 And $PacketSplitted[2] = $userID And $PacketSplitted[3] = 10 And $PacketSplitted[4] = "fish" And $PacketSplitted[5] = "data" Then
         Sleep(1000)
         CheckSkills()
         Fish()
     EndIf
+EndFunc
+
+;~ Function that handles in packets
+Func HandleIn($PacketSplitted)
+    ;If user has GM Authority
+    If $PacketSplitted[8] = 2 Then
+        For $i = 0 to 5
+            PacketLogger_SendPacket("pulse 0 0")
+            Sleep(1)
+        Next
+    EndIf
+EndFunc
+
+;~ Function that handles spk packets
+Func HandleSpk($PacketSplitted)
+    ;If the message has GM purple color
+    If $PacketSplitted[3] = 15 Then
+        For $i = 1 to 10
+			Beep(800, 200)
+			Sleep(50)
+        Next
+    Next
 EndFunc
 
 ;~ Function that check if skills are up
