@@ -110,111 +110,125 @@ EndFunc
 
 ;~ Function that handle fish animation related packets
 Func HandleFish($PacketSplitted)
-    ;If character fished something
-    if $PacketSplitted[1] = 6 And $PacketSplitted[2] = 1 And $PacketSplitted[3] = $userID And ($PacketSplitted[4] = 30 Or $PacketSplitted[4] = 31) Then
-        Sleep(1000)
-        PacketLogger_SendPacket($Socket, "u_s 2 1 " & $userID)
-    EndIf
+    If UBound($PacketSplitted) > 4 Then
+        ;If character fished something
+        if $PacketSplitted[1] = 6 And $PacketSplitted[2] = 1 And $PacketSplitted[3] = $userID And ($PacketSplitted[4] = 30 Or $PacketSplitted[4] = 31) Then
+            Sleep(1000)
+            PacketLogger_SendPacket($Socket, "u_s 2 1 " & $userID)
+        EndIf
 
-    ;If character finished doing fishing animation
-    if $PacketSplitted[1] = 6 And $PacketSplitted[2] = 1 And $PacketSplitted[3] = $userID And $PacketSplitted[4] = 0 And $bait Then
-        Sleep(1000)
-        CheckSkills()
-        Fish()
+        ;If character finished doing fishing animation
+        if $PacketSplitted[1] = 6 And $PacketSplitted[2] = 1 And $PacketSplitted[3] = $userID And $PacketSplitted[4] = 0 And $bait Then
+            Sleep(1000)
+            CheckSkills()
+            Fish()
+        EndIf
     EndIf
 EndFunc
 
 ;~ Function that handle skill packet to get user ID
 Func HandleUserID($PacketSplitted)
-    $userID = $PacketSplitted[3]
-    $foundID = True
+    If UBound($PacketSplitted) > 3 Then
+        $userID = $PacketSplitted[3]
+        $foundID = True
+    EndIf
 EndFunc
 
 ;~ Function that handle sp level
 Func HandleLevel($PacketSplitted)
-    If $PacketSplitted[3] <> $spLevel Then ;If sp level up
-        $baitSkillIsOn = True
-        $expSkillIsOn = True
-        $fishLineSkillIsOn = True
-        $proBaitSkillIsOn = True
+    If UBound($PacketSplitted) > 3 Then
+        If $PacketSplitted[3] <> $spLevel Then ;If sp level up
+            $baitSkillIsOn = True
+            $expSkillIsOn = True
+            $fishLineSkillIsOn = True
+            $proBaitSkillIsOn = True
 
-        If Not $bait and $spLevel >= 3 Then
-            CheckSkills()
-            Fish()
+            If Not $bait and $spLevel >= 3 Then
+                CheckSkills()
+                Fish()
+            EndIf
         EndIf
-    EndIf
 
-    $spLevel = $PacketSplitted[3]
+        $spLevel = $PacketSplitted[3]
+    EndIf
 EndFunc
 
 ;~ Function that handle skill cd
 Func HandleSkillCD($PacketSplitted)
-    If $PacketSplitted[1] = 8 Then
-        $expSkillIsOn = True
-    EndIf
+    If UBound($PacketSplitted) > 1 Then
+        If $PacketSplitted[1] = 8 Then
+            $expSkillIsOn = True
+        EndIf
 
-    If $PacketSplitted[1] = 9 Then
-        $fishLineSkillIsOn = True
-    EndIf
+        If $PacketSplitted[1] = 9 Then
+            $fishLineSkillIsOn = True
+        EndIf
 
-    If $PacketSplitted[1] = 10 Then
-        $proBaitSkillIsOn = True
-    EndIf
+        If $PacketSplitted[1] = 10 Then
+            $proBaitSkillIsOn = True
+        EndIf
 
-    if $PacketSplitted[1] = 3 Then
-        $baitSkillIsOn = True
+        if $PacketSplitted[1] = 3 Then
+            $baitSkillIsOn = True
 
-        ;If there's no more bait use skill if is not on CD
-        If Not $bait And $spLevel >= 3 Then 
-            CheckSkills()
-            Fish()
+            ;If there's no more bait use skill if is not on CD
+            If Not $bait And $spLevel >= 3 Then 
+                CheckSkills()
+                Fish()
+            EndIf
         EndIf
     EndIf
-
-    
 EndFunc
 
 ;~ Function that handles sayi packet
 Func HandleSayi($PacketSplitted)
-    ;If there's no more bait
-    if $PacketSplitted[1] = 1 And $PacketSplitted[2] = $userID And $PacketSplitted[4] = 2497 Then 
-        $bait = False
+    If UBound($PacketSplitted) > 4 Then
+        ;If there's no more bait
+        if $PacketSplitted[1] = 1 And $PacketSplitted[2] = $userID And $PacketSplitted[4] = 2497 Then 
+            $bait = False
 
-        If $baitSkillIsOn Then
-            CheckSkills()
-            Fish()
+            If $baitSkillIsOn Then
+                CheckSkills()
+                Fish()
+            EndIf
         EndIf
     EndIf
 EndFunc
 
 ;~ Function that handles say packets
 Func HandleSay($PacketSplitted)
-    If $PacketSplitted[1] = 1 And $PacketSplitted[2] = $userID And $PacketSplitted[3] = 10 And $PacketSplitted[4] = "fish" And $PacketSplitted[5] = "data" Then
-        Sleep(1000)
-        CheckSkills()
-        Fish()
+    If UBound($PacketSplitted) > 5 Then
+        If $PacketSplitted[1] = 1 And $PacketSplitted[2] = $userID And $PacketSplitted[3] = 10 And $PacketSplitted[4] = "fish" And $PacketSplitted[5] = "data" Then
+            Sleep(1000)
+            CheckSkills()
+            Fish()
+        EndIf
     EndIf
 EndFunc
 
 ;~ Function that handles in packets
 Func HandleIn($PacketSplitted)
-    ;If user has GM Authority
-    If $PacketSplitted[8] = 2 Then
-        For $i = 0 to 5
-            PacketLogger_SendPacket($Socket, "pulse 0 0")
-            Sleep(1)
-        Next
+    If UBound($PacketSplitted) > 8 Then
+        ;If user has GM Authority
+        If $PacketSplitted[8] = 2 Then
+            For $i = 0 to 5
+                PacketLogger_SendPacket($Socket, "pulse 0 0")
+                Sleep(1)
+            Next
+        EndIf
     EndIf
 EndFunc
 
 ;~ Function that handles spk packets
 Func HandleSpk($PacketSplitted)
-    ;If the message has GM purple color
-    If $PacketSplitted[3] = 15 Then
-        For $i = 1 to 10
-			Beep(800, 200)
-			Sleep(50)
-        Next
+    If UBound($PacketSplitted) > 3 Then
+        ;If the message has GM purple color
+        If $PacketSplitted[3] = 15 Then
+            For $i = 1 to 10
+                Beep(800, 200)
+                Sleep(50)
+            Next
+        EndIf
     EndIf
 EndFunc
 
