@@ -76,9 +76,12 @@ Func Bot()
     WEnd
 
     ;Main bot loop
+    local $res = 0
     While $fishing
-        Sleep(10)
-        PacketLogger_Handle($Socket, IncomingPacket)
+        $res = PacketLogger_Handle($Socket, IncomingPacket)
+		
+		If($res = 1) Then sleep(50)
+	    If($res = 2) then ExitLoop
     WEnd
 
     PacketLogger_Close($Socket)
