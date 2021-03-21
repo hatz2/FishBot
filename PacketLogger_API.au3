@@ -77,6 +77,11 @@ EndFunc
 
 Func PacketLogger_Handle($Socket, $ReceiveCallback, $MaxReceiveBytes = 8192)
 	$ReceivedPacket = TCPRecv($Socket, $MaxReceiveBytes)
+	If @extended = 1 Then ; Return 1 to sleep if no data were received
+		Return 1
+	elseIf @error <> 0 Then ;Return 2 so the "thread" for connected client can end
+		Return 2
+	Endif
 	;If @error <> 0 Then
 	;	MsgBox(0,"",@error)
 	;	If IsFunc($PacketLogger_DisconnectedCallback) Then
